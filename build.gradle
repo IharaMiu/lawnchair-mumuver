@@ -189,9 +189,9 @@ android {
 
     // Load all proguard configs from AOSP
     def proguardFilesFromAosp = allprojects
-        。collect { it.file("proguard.flags") }
-        。findAll { it.exists() }
-        。toArray()
+        .collect { it.file("proguard.flags") }
+        .findAll { it.exists() }
+        .toArray()
 
     def releaseSigning
     try {

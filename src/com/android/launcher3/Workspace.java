@@ -31,7 +31,6 @@ import static com.android.launcher3.LauncherState.HINT_STATE;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.LauncherState.SPRING_LOADED;
 import static com.android.launcher3.MotionEventsUtils.isTrackpadMultiFingerSwipe;
-import static com.android.launcher3.Utilities.SHOULD_SHOW_FIRST_PAGE_WIDGET;
 import static com.android.launcher3.anim.AnimatorListeners.forSuccessCallback;
 import static com.android.launcher3.config.FeatureFlags.FOLDABLE_SINGLE_PAGE;
 import static com.android.launcher3.logging.StatsLogManager.LAUNCHER_STATE_HOME;
@@ -55,7 +54,6 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -75,9 +73,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.drawable.DrawableKt;
 
-import com.android.launcher3.Utilities;
 import com.android.app.animation.Interpolators;
 import com.android.launcher3.accessibility.AccessibleDragListenerAdapter;
 import com.android.launcher3.accessibility.WorkspaceAccessibilityHelper;
@@ -135,8 +131,6 @@ import com.android.launcher3.widget.PendingAddWidgetInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 import com.android.launcher3.widget.WidgetManagerHelper;
 import com.android.launcher3.widget.util.WidgetSizes;
-import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlay;
-import com.google.android.renderscript.Toolkit;
 import com.patrykmichalik.opto.core.PreferenceExtensionsKt;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayCallbacks;
 import com.android.systemui.plugins.shared.LauncherOverlayManager.LauncherOverlayTouchProxy;
@@ -148,11 +142,14 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import app.lawnchair.LawnchairApp;
+import app.lawnchair.LawnchairAppKt;
 import app.lawnchair.preferences.PreferenceManager;
 import app.lawnchair.preferences2.PreferenceManager2;
 import app.lawnchair.smartspace.SmartspaceAppWidgetProvider;
 import app.lawnchair.smartspace.model.LawnchairSmartspace;
 import app.lawnchair.smartspace.model.SmartspaceMode;
+import app.lawnchair.theme.drawable.DrawableTokens;
 import app.lawnchair.util.LawnchairUtilsKt;
 
 /**
@@ -355,20 +352,6 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         setMotionEventSplittingEnabled(true);
         setOnTouchListener(new WorkspaceTouchListener(mLauncher, this));
         mStatsLogManager = StatsLogManager.newInstance(context);
-
-        if (mPreferenceManger.getEnableWallpaperBlur().get() && mWallpaperManager.getDrawable() != null) {
-            var blurWallpaper = mPreferenceManger.getWallpaperBlur().get();
-            var blurThreshold = mPreferenceManger.getWallpaperBlurFactorThreshold().get();
-            var wallpaperBitmap = mWallpaperManager.getDrawable();
-            try {
-                mWallpaperManager.setBitmap(
-                        LawnchairUtilsKt.blurBitmap(toBitmap(wallpaperBitmap), blurWallpaper, blurThreshold), null,
-                        true, WallpaperManager.FLAG_SYSTEM);
-                mWallpaperManager.forgetLoadedWallpaper();
-            } catch (Exception ex) {
-                Log.e(TAG, "error failed bluring wallpaper");
-            }
-        }
     }
 
     @Override
@@ -635,6 +618,14 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
         setWallpaperDimension();
     }
 
+    public void updateStatusbarClock() {
+        if (mCurrentPage == 0 && PreferenceExtensionsKt.firstBlocking(mPreferenceManager2.getStatusBarClock())) {
+            LawnchairAppKt.getLawnchairApp(mLauncher).hideClockInStatusBar();
+        } else {
+            LawnchairAppKt.getLawnchairApp(mLauncher).restoreClockInStatusBar();
+        }
+    }
+
     private void setupLayoutTransition() {
         // We want to show layout transitions when pages are deleted, to close the gap.
         mLayoutTransition = new LayoutTransition();
@@ -757,7 +748,8 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
 
     public CellLayout insertNewWorkspaceScreen(int screenId, int insertIndex) {
         if (mWorkspaceScreens.containsKey(screenId)) {
-            throw new RuntimeException("Screen id " + screenId + " already exists!");
+            Log.w(TAG, "Screen id " + screenId + " already exists, skipping insertion");
+            return mWorkspaceScreens.get(screenId);
         }
 
         // Inflate the cell layout, but do not add it automatically so that we can get
@@ -1511,6 +1503,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
                                             .setPageIndex(prevPage))
                             .build())
                     .log(event);
+            updateStatusbarClock();
         }
     }
 

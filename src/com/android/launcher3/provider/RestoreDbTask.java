@@ -31,6 +31,8 @@ import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_APPWIDG
 import static com.android.launcher3.provider.LauncherDbUtils.dropTable;
 import static com.android.launcher3.widget.LauncherWidgetHolder.APPWIDGET_HOST_ID;
 
+import static java.util.stream.Collectors.toList;
+
 import android.app.backup.BackupManager;
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
@@ -178,7 +180,7 @@ public class RestoreDbTask {
         // phone
         return LauncherFiles.GRID_DB_FILES.stream()
                 .filter(dbName -> new File(dbName).exists())
-                .toList();
+                .collect(toList());
     }
 
     /**
@@ -196,7 +198,7 @@ public class RestoreDbTask {
                 });
     }
 
-    private static boolean performRestore(Context context, ModelDbController controller) {
+    public static boolean performRestore(Context context, ModelDbController controller) {
         SQLiteDatabase db = controller.getDb();
         FileLog.d(TAG, "performRestore: starting restore from db");
         try (SQLiteTransaction t = new SQLiteTransaction(db)) {

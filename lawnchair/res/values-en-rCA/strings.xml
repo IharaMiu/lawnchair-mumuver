@@ -21,9 +21,9 @@
     Actions and Verbs
 
     -->
-    <string name="preview_label">Preview</string>
+    <string name="preview_label">Solanvip1</string>
     <string name="action_create">Create</string>
-    <string name="action_backup">Backup</string>
+    <string name="action_backup"></string>
     <string name="action_restore">Restore</string>
     <string name="action_delete">Delete</string>
     <string name="action_reset">Reset</string>
@@ -406,6 +406,8 @@
     <string name="status_bar_label">Status bar</string>
     <string name="show_status_bar">Show status bar</string>
     <string name="dark_status_bar_label">Dark status bar</string>
+    <string name="status_bar_clock_label">Status bar clock</string>
+    <string name="status_bar_clock_description">Dynamically hide status bar clock in first screen</string>
     <string name="home_screen_text_color">Text color</string>
     <string name="color_light">Light</string>
     <string name="color_dark">Dark</string>

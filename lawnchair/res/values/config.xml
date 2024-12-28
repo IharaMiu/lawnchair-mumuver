@@ -40,7 +40,7 @@
     <string name="clock_component_name" translatable="false">com.google.android.deskclock/com.android.deskclock.DeskClock</string>
     <string name="launcher_activity_logic_class" translatable="false">app.lawnchair.LauncherActivityCachingLogic</string>
     <string name="main_process_initializer_class" translatable="false">app.lawnchair.LawnchairProcessInitializer</string>
-<!--    <string name="task_overlay_factory_class" translatable="false">app.lawnchair.overview.TaskOverlayFactoryImpl</string>-->
+    <string name="task_overlay_factory_class" translatable="false">app.lawnchair.overview.TaskOverlayFactoryImpl</string>
     <string name="wallpaper_picker_package" translatable="false">com.android.wallpaper</string>
     <string name="wallpaper_picker_package_alt" translatable="false">com.google.android.apps.wallpaper</string>
     <string name="widget_holder_factory_class" translatable="false">app.lawnchair.factory.LawnchairWidgetHolder$LawnchairHolderFactory</string>
@@ -102,6 +102,7 @@
     <bool name="config_default_widget_unlimited_size">false</bool>
     <bool name="config_default_show_status_bar">true</bool>
     <bool name="config_default_remember_position">false</bool>
+    <bool name="config_default_dynamic_hide_status_bar_clock">false</bool>
     <bool name="config_default_show_scrollbar">true</bool>
     <bool name="config_default_show_top_shadow">true</bool>
     <bool name="config_default_lock_home_screen">false</bool>
